@@ -1,14 +1,15 @@
 package pl.coderslab.service;
 
 import org.springframework.stereotype.Component;
-import pl.coderslab.beans.Book;
+import pl.coderslab.entity.Book;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Component
-public class MockBookService {
+public class MockBookService implements BookService{
     private List<Book> list;
     private static Long nextId = 4L;
 
@@ -37,10 +38,34 @@ public class MockBookService {
                 "programming"));
     }
 
-    public List<Book> getAllBooks(){
+    public List<Book> getBooks(){
         return this.list;
     }
 
+    public Optional<Book> getBookById(long id){
+         return list.stream()
+                .filter(n -> n.getId()==id).findFirst();
+    }
+
+    public void add(Book book)
+    {
+        book.setId(nextId);
+        list.add(book);
+        nextId++;
+    }
+
+    public void delete(long id){
+        if(getBookById(id).isPresent()){
+            getList().remove(getBookById(id).get());
+        }
+    }
+
+    public void update(Book book){
+        if (this.getBookById(book.getId()).isPresent()) {
+            int indexOf = list.indexOf(this.getBookById(book.getId()).get());
+            list.set(indexOf, book);
+        }
+    }
 
 
 }

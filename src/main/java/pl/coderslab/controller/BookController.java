@@ -1,10 +1,10 @@
 package pl.coderslab.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import pl.coderslab.beans.Book;
-import pl.coderslab.service.MockBookService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import pl.coderslab.entity.Book;
+import pl.coderslab.service.BookService;
 
 import java.util.List;
 
@@ -13,22 +13,49 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookController {
 
-    MockBookService mockBookService;
+    BookService bookService;
 
-    public BookController(MockBookService mockBookService) {
-        this.mockBookService = mockBookService;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @RequestMapping("/helloBook")
-    public pl.coderslab.beans.Book helloBook() {
-        return new pl.coderslab.beans.Book(1L, "9788324631766", "Thinking in Java",
+    public pl.coderslab.entity.Book helloBook() {
+        return new pl.coderslab.entity.Book(1L, "9788324631766", "Thinking in Java",
                 "Bruce Eckel", "Helion", "programming");
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Book> getAllBooks(){
-        return mockBookService.getAllBooks();
+        return bookService.getBooks();
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public Book getBookById(@PathVariable long id){
+        return bookService.getBookById(id).orElseThrow(() -> {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
+        });
+    }
+
+    @PostMapping("")
+    public void addBook(@RequestBody Book book){
+        bookService.add(book);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable long id){
+        bookService.delete(id);
+    }
+
+    @PutMapping("")
+    @ResponseBody
+    public void updateBook(@RequestBody Book book) {
+        bookService.update(book);
+    }
+
+
 
 
 }

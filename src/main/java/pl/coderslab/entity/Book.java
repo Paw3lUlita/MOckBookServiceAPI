@@ -1,10 +1,14 @@
-package pl.coderslab.beans;
-
-import org.springframework.stereotype.Component;
+package pl.coderslab.entity;
 
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "books")
 public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String isbn;
     private String title;
@@ -19,6 +23,10 @@ public class Book {
         this.author = author;
         this.publisher = publisher;
         this.type = type;
+    }
+
+    public Book(){
+
     }
 
     public long getId() {
